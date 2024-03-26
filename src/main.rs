@@ -10,15 +10,18 @@ fn main() {
     // read file line by line, add to set
     let mut set = std::collections::HashSet::new();
     for line in lines {
-        set.insert(line.unwrap());
+        set.insert(line.unwrap().to_lowercase());
     }
+
+    let mut found = std::collections::HashSet::new();
 
     // for each word in set, check if the reverse is in set too, but if reverse is the same as the word, skip
     // save the word and the reverse to file semordnilap.txt
     let mut semordnilap = File::create("semordnilap.txt").unwrap();
     for word in set.iter() {
         let reverse: String = word.chars().rev().collect();
-        if word != &reverse && set.contains(&reverse) {
+        if word != &reverse && !found.contains(&reverse) && set.contains(&reverse) {
+            found.insert(word);
             writeln!(semordnilap, "{} <> {}", word, reverse).unwrap();
         }
     }
