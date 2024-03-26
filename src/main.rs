@@ -3,11 +3,13 @@ use std::io::{self, BufRead, Write};
 use std::path::Path;
 
 fn main() {
-    work("basiswoorden-gekeurd.txt", "semordnilap-gekeurd.txt");
-    work("basiswoorden-ongekeurd.txt", "semordnilap-ongekeurd.txt");
+    semordnilap("basiswoorden-gekeurd.txt", "semordnilap-gekeurd.txt");
+    semordnilap("basiswoorden-ongekeurd.txt", "semordnilap-ongekeurd.txt");
+    palindromes("basiswoorden-gekeurd.txt", "palindromes-gekeurd.txt");
+    palindromes("basiswoorden-ongekeurd.txt", "palindromes-ongekeurd.txt");
 }
 
-fn work(input: &str, output: &str) {
+fn semordnilap(input: &str, output: &str) {
     // open file wordlist.txt
     let lines = read_lines(input).unwrap();
 
@@ -29,7 +31,26 @@ fn work(input: &str, output: &str) {
             writeln!(semordnilap, "{} <> {}", word, reverse).unwrap();
         }
     }
+}
 
+fn palindromes(input: &str, output: &str) {
+    // open file wordlist.txt
+    let lines = read_lines(input).unwrap();
+
+    // read file line by line, add to set
+    let mut set = std::collections::HashSet::new();
+    for line in lines {
+        set.insert(line.unwrap().to_lowercase());
+    }
+
+    // for each word in set, check if the reverse is the same as the word
+    let mut palindromes = File::create(output).unwrap();
+    for word in set.iter() {
+        let reverse: String = word.chars().rev().collect();
+        if word == &reverse {
+            writeln!(palindromes, "{}", word).unwrap();
+        }
+    }
 }
 
 // The output is wrapped in a Result to allow matching on errors.
