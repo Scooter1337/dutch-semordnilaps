@@ -5,7 +5,7 @@ use std::path::Path;
 
 fn main() {
     // open file wordlist.txt
-    let lines = read_lines("wordlist.txt").unwrap();
+    let lines = read_lines("basiswoorden-gekeurd.txt").unwrap();
 
     // read file line by line, add to set
     let mut set = std::collections::HashSet::new();
@@ -17,7 +17,7 @@ fn main() {
 
     // for each word in set, check if the reverse is in set too, but if reverse is the same as the word, skip
     // save the word and the reverse to file semordnilap.txt
-    let mut semordnilap = File::create("semordnilap.txt").unwrap();
+    let mut semordnilap = File::create("semordnilap-gekeurd.txt").unwrap();
     for word in set.iter() {
         let reverse: String = word.chars().rev().collect();
         if word != &reverse && !found.contains(&reverse) && set.contains(&reverse) {
