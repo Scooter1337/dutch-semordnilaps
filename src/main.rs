@@ -5,24 +5,29 @@ use std::path::Path;
 use std::vec::Vec;
 
 fn main() {
-    semordnilap("basiswoorden-gekeurd.txt", "nemordnilap-gekeurd.txt");
-    semordnilap("basiswoorden-ongekeurd.txt", "nemordnilap-ongekeurd.txt");
-    palindromes("basiswoorden-gekeurd.txt", "palindromen-gekeurd.txt");
-    palindromes("basiswoorden-ongekeurd.txt", "palindromen-ongekeurd.txt");
-    anagrams("basiswoorden-gekeurd.txt", "anagrammen-gekeurd.txt");
-    anagrams("basiswoorden-ongekeurd.txt", "anagrammen-ongekeurd.txt");
-}
 
-fn semordnilap(input: &str, output: &str) {
-    // open file wordlist.txt
-    let lines = read_lines(input).unwrap();
+    let mut ongekeurd_set = std::collections::HashSet::new();
+    let mut gekeurd_set = std::collections::HashSet::new();
 
-    // read file line by line, add to set
-    let mut set = std::collections::HashSet::new();
-    for line in lines {
-        set.insert(line.unwrap().to_lowercase());
+    let ongekeurd = read_lines("basiswoorden-ongekeurd.txt").unwrap();
+    for line in ongekeurd {
+        ongekeurd_set.insert(line.unwrap().to_lowercase());
     }
 
+    let gekeurd = read_lines("basiswoorden-gekeurd.txt").unwrap();
+    for line in gekeurd {
+        gekeurd_set.insert(line.unwrap().to_lowercase());
+    }
+
+    semordnilap("nemordnilap-gekeurd.txt", &gekeurd_set);
+    semordnilap("nemordnilap-ongekeurd.txt", &ongekeurd_set);
+    palindromes("palindromen-gekeurd.txt", &gekeurd_set);
+    palindromes( "palindromen-ongekeurd.txt", &ongekeurd_set);
+    anagrams("anagrammen-gekeurd.txt", &gekeurd_set);
+    anagrams("anagrammen-ongekeurd.txt", &ongekeurd_set);
+}
+
+fn semordnilap(output: &str, set: &std::collections::HashSet<String>) {
     let mut found = std::collections::HashSet::new();
 
     // for each word in set, check if the reverse is in set too, but if reverse is the same as the word, skip
@@ -42,15 +47,8 @@ fn semordnilap(input: &str, output: &str) {
     }
 }
 
-fn palindromes(input: &str, output: &str) {
-    // open file wordlist.txt
-    let lines = read_lines(input).unwrap();
+fn palindromes(output: &str, set: &std::collections::HashSet<String>) {
 
-    // read file line by line, add to set
-    let mut set = std::collections::HashSet::new();
-    for line in lines {
-        set.insert(line.unwrap().to_lowercase());
-    }
 
     // for each word in set, check if the reverse is the same as the word
     let mut palindromes = File::create(output).unwrap();
@@ -69,30 +67,28 @@ fn palindromes(input: &str, output: &str) {
     }
 }
 
-fn anagrams(input: &str, output: &str) {
+fn anagrams(output: &str, set: &std::collections::HashSet<String>) {
     // open file wordlist.txt
-    let lines = read_lines(input).unwrap();
+
 
     // read file line by line, add to map (word, sorted word)
     let mut map: HashMap<String, Vec<String>> = std::collections::HashMap::new();
-    for line in lines {
-
+    for word in set.iter() {
         // skip words with less than 2 characters
-        if line.as_ref().unwrap().len() < 2 { continue; }
+        if word.len() < 2 { continue; }
 
         // skip words consisting of 1 character
-        if line.as_ref().unwrap().chars().all(|c| c == line.as_ref().unwrap().chars().next().unwrap()) { continue; }
+        if word.chars().all(|c| c == word.chars().next().unwrap()) { continue; }
 
-        let word = line.unwrap().to_lowercase();
-        let sorted = sort_word(&word);
+        let sorted = sort_word(word);
         let wordlist = map.get_mut(&sorted);
 
         match wordlist {
             Some(words) => {
-                words.push(word);
+                words.push(word.to_owned());
             },
             None => {
-                map.insert(sorted, vec![word]);
+                map.insert(sorted, vec![word.to_owned()]);
             }
         }
     }
