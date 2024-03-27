@@ -76,6 +76,13 @@ fn anagrams(input: &str, output: &str) {
     // read file line by line, add to map (word, sorted word)
     let mut map: HashMap<String, Vec<String>> = std::collections::HashMap::new();
     for line in lines {
+
+        // skip words with less than 2 characters
+        if line.as_ref().unwrap().len() < 2 { continue; }
+
+        // skip words consisting of 1 character
+        if line.as_ref().unwrap().chars().all(|c| c == line.as_ref().unwrap().chars().next().unwrap()) { continue; }
+
         let word = line.unwrap().to_lowercase();
         let sorted = sort_word(&word);
         let wordlist = map.get_mut(&sorted);
