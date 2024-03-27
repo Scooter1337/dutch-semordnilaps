@@ -9,15 +9,13 @@ fn main() {
     let mut ongekeurd_set = std::collections::HashSet::new();
     let mut gekeurd_set = std::collections::HashSet::new();
 
-    let ongekeurd = read_lines("basiswoorden-ongekeurd.txt").unwrap();
-    for line in ongekeurd {
+    read_lines("basiswoorden-ongekeurd.txt").unwrap().for_each(|line| {
         ongekeurd_set.insert(line.unwrap().to_lowercase());
-    }
+    });
 
-    let gekeurd = read_lines("basiswoorden-gekeurd.txt").unwrap();
-    for line in gekeurd {
+    read_lines("basiswoorden-gekeurd.txt").unwrap().for_each(|line| {
         gekeurd_set.insert(line.unwrap().to_lowercase());
-    }
+    });
 
     semordnilap("nemordnilap-gekeurd.txt", &gekeurd_set);
     semordnilap("nemordnilap-ongekeurd.txt", &ongekeurd_set);
@@ -71,12 +69,12 @@ fn anagrams(output: &str, set: &std::collections::HashSet<String>) {
 
     // read file line by line, add to map (word, sorted word)
     let mut map: HashMap<String, Vec<String>> = std::collections::HashMap::new();
-    for word in set.iter() {
+   set.iter().for_each(|word| {
         // skip words with less than 2 characters
-        if word.len() < 2 { continue; }
+        if word.len() < 2 { return; }
 
         // skip words consisting of 1 character
-        if word.chars().all(|c| c == word.chars().next().unwrap()) { continue; }
+        if word.chars().all(|c| c == word.chars().next().unwrap()) { return; }
 
         let sorted = sort_word(word);
         let wordlist = map.get_mut(&sorted);
@@ -89,18 +87,17 @@ fn anagrams(output: &str, set: &std::collections::HashSet<String>) {
                 map.insert(sorted, vec![word.to_owned()]);
             }
         }
-    }
+    });
 
     // for each sorted word in map, if the length of the list of words is greater than 1, save to file anagrammen.txt
     let mut anagrams = File::create(output).unwrap();
 
-    for (_, words) in map.iter() {
+    map.iter().for_each(|(_, words)| {
         if words.len() > 1 {
             let words_joined = words.join(", ");
             writeln!(anagrams, "{}", words_joined).unwrap();
         }
-
-    }
+    });
 }
 
 /// The output is wrapped in a Result to allow matching on errors. \
