@@ -33,38 +33,36 @@ fn semordnilap(output: &str, set: &std::collections::HashSet<String>) {
     // for each word in set, check if the reverse is in set too, but if reverse is the same as the word, skip
     // save the word and the reverse to file semordnilap.txt
     let mut semordnilap = File::create(output).unwrap();
-    for word in set.iter() {
-        if word.len() < 2 { continue; }
+    set.iter().for_each(|word| {
+        if word.len() < 2 { return; }
 
         // skip words consisting of 1 character
-        if word.chars().all(|c| c == word.chars().next().unwrap()) { continue; }
+        if word.chars().all(|c| c == word.chars().next().unwrap()) { return; }
 
         let reverse: String = word.chars().rev().collect();
         if word != &reverse && !found.contains(&reverse) && set.contains(&reverse) {
             found.insert(word);
             writeln!(semordnilap, "{}, {}", word, reverse).unwrap();
         }
-    }
+    })
 }
 
 fn palindromes(output: &str, set: &std::collections::HashSet<String>) {
-
-
     // for each word in set, check if the reverse is the same as the word
     let mut palindromes = File::create(output).unwrap();
-    for word in set.iter() {
 
+    set.iter().for_each(|word| {
         // skip words with less than 2 characters
-        if word.len() < 2 { continue; }
+        if word.len() < 2 { return; }
 
         // skip words consisting of 1 character
-        if word.chars().all(|c| c == word.chars().next().unwrap()) { continue; }
+        if word.chars().all(|c| c == word.chars().next().unwrap()) { return; }
 
         let reverse: String = word.chars().rev().collect();
         if word == &reverse {
             writeln!(palindromes, "{}", word).unwrap();
         }
-    }
+    })
 }
 
 fn anagrams(output: &str, set: &std::collections::HashSet<String>) {
@@ -105,15 +103,17 @@ fn anagrams(output: &str, set: &std::collections::HashSet<String>) {
     }
 }
 
-// The output is wrapped in a Result to allow matching on errors.
-// Returns an Iterator to the Reader of the lines of the file.
-// https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html
+/// The output is wrapped in a Result to allow matching on errors. \
+/// Returns an Iterator to the Reader of the lines of the file. \
+/// https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where P: AsRef<Path>, {
     let file = File::open(filename)?;
     Ok(io::BufReader::new(file).lines())
 }
 
+/// Sorts the characters of a word alphabetically \
+/// foobar -> abfoor
 fn sort_word(word: &str) -> String {
     let mut chars: Vec<char> = word.chars().collect();
     chars.sort();
